@@ -14,10 +14,13 @@ app.get("/", (req, res) => {
 const authRoutes = require("../e_com_backend/routes/authroutes");
 const userRoutes = require("../e_com_backend/routes/user_routes");
 const productRoutes = require("../e_com_backend/routes/product_routes");
+const orderRoutes = require("../e_com_backend/routes/order_routes");
+
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () => {

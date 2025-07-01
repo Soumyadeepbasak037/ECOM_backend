@@ -1,7 +1,7 @@
 const db = require("../config/db");
 
-exports.add_to_card = (req, res) => {
-  const user_id = req.body.id;
+exports.add_to_cart = (req, res) => {
+  const user_id = req.user.id;
   const product_id = req.body.product_id;
   const quantity = req.body.qty;
 
@@ -16,7 +16,7 @@ exports.add_to_card = (req, res) => {
   const existing = db
     .prepare(
       `
-    SELECT * FROM cart_items WHERE user_id = ? AND product_id = ?
+    SELECT * FROM cart_items WHERE user_id = ? AND product_id = ? 
   `
     )
     .get(user_id, product_id);
@@ -60,7 +60,7 @@ exports.placeOrder = (req, res) => {
     return res.status(400).json({ message: "Cart is empty." });
   }
 
-  const totalPrice = cartItems.reduce(
+  const totalPrice = cart_items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
@@ -70,7 +70,7 @@ exports.placeOrder = (req, res) => {
     INSERT INTO orders (user_id, total_price) VALUES (?, ?)
   `);
   const order_result = order_stmt.run(userId, totalPrice);
-  const orderId = order_result.lastInsertRowid;
+  const order_id = order_result.lastInsertRowid;
 
   // add items
   const order_item_stmt = db.prepare(`
@@ -80,8 +80,25 @@ exports.placeOrder = (req, res) => {
 
   const insertMany = db.transaction((items) => {
     for (const item of items) {
-      order_item_stmt.run(orderId, item.product_id, item.quantity, item.price);
+      order_item_stmt.run(order_id, item.product_id, item.quantity, item.price);
     }
   });
   insertMany(cart_items);
+  res.status(201).json({ message: "Order placed", order_id: orderId });
 };
+
+exports.get_user_orders = (req, res) => {
+  const user_id = req.body.id;
+
+  const orders = db
+    .prepare(`SELECT * FROM orders WHERE user_id = ?`)
+    .all(user_id);
+
+  res.json(orders);
+};
+
+// exports.get_order_details = (req, res) => {
+//   const user_id = req.body.user_id;
+
+//   const details = db.prepare(``);
+// };
