@@ -41,6 +41,18 @@ exports.add_to_cart = (req, res) => {
   res.json({ message: "Product added to cart" });
 };
 
+exports.get_cart = (req, res) => {
+  const user_id = req.user.id;
+  const data = db
+    .prepare(`SELECT * FROM cart_items WHERE user_id = ?`)
+    .all(user_id);
+  if (!data) {
+    res.json("Cart Empty");
+  } else {
+    res.json(data);
+  }
+};
+
 exports.placeOrder = (req, res) => {
   const userId = req.user.id;
 
@@ -84,11 +96,11 @@ exports.placeOrder = (req, res) => {
     }
   });
   insertMany(cart_items);
-  res.status(201).json({ message: "Order placed", order_id: orderId });
+  res.status(201).json({ message: "Order placed", order_id: order_id });
 };
 
 exports.get_user_orders = (req, res) => {
-  const user_id = req.body.id;
+  const user_id = req.user.id;
 
   const orders = db
     .prepare(`SELECT * FROM orders WHERE user_id = ?`)
