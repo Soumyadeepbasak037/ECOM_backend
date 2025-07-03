@@ -1,0 +1,38 @@
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px auto;
+  width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  background-color: #ffffff;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card h3 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.card p {
+  margin: 0;
+  color: #666;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: nowrap;  /* Prevent wrapping, or set to wrap if too many cards */
+  overflow-x: auto;    /* Scroll if overflowing */
+  gap: 16px;
+  padding: 16px;
+}
+
+.card {
+  min-width: 250px; /* Ensures cards don't shrink too small */
+  flex-shrink: 0;
+}
